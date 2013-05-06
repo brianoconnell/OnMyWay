@@ -51,19 +51,18 @@
         <!--<Image Source="/Assets/AlignmentGrid.png" VerticalAlignment="Top" Height="800" Width="480" Margin="0,-32,0,0" Grid.Row="0" Grid.RowSpan="2" IsHitTestVisible="False" />-->
         <!--TitlePanel contains the name of the application and page title-->
         <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="12,17,0,28">
-            <TextBlock Text="MY APPLICATION" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,0"/>
-            <TextBlock Text="page name" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
+            <TextBlock Text="ON MY WAY" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,0"/>
+            <TextBlock Text="where are you going?" Margin="9,-7,0,0" Style="{StaticResource PhoneTextLargeStyle}"/>
         </StackPanel>
 
-        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
-
-            <maps:Map x:Name="theMap" VerticalAlignment="Top" HorizontalAlignment="Left" Height="597" Width="456" Hold="OnMapHold">
+        <StackPanel x:Name="ContentPanel" Margin="12,0,12,84">
+            <maps:Map x:Name="theMap" VerticalAlignment="Top" HorizontalAlignment="Left" Height="728" Width="456" Hold="OnMapHold" RenderTransformOrigin="0.473,0.68">
                 <maptk:MapExtensions.Children>
                     <maptk:UserLocationMarker x:Name="UserLocationMarker" Visibility="Collapsed"></maptk:UserLocationMarker>
                 </maptk:MapExtensions.Children>
             </maps:Map>
-
-        </Grid>
+            <TextBlock Text="{Binding DurationToDestination}"></TextBlock>
+        </StackPanel>
 
     </Grid>
 

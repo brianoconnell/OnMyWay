@@ -3,12 +3,15 @@
     using System;
     using System.Collections.Generic;
     using System.Device.Location;
-    using System.Diagnostics;
+    using System.Linq;
     using System.Windows;
+
+    using Boco.OnMyWay.App.Helpers;
 
     using Microsoft.Phone.Controls;
     using Microsoft.Phone.Maps.Services;
     using Microsoft.Phone.Maps.Toolkit;
+    using Microsoft.Phone.Tasks;
 
     using Windows.Devices.Geolocation;
 
@@ -21,16 +24,22 @@
         {
             InitializeComponent();
             InitializeMap();
-
-            Loaded += OnMainPageLoaded;
+            Loaded += OnMainPageLoad;
+            DataContext = App.ViewModel;
             // Sample code to localize the ApplicationBar
             //BuildLocalizedApplicationBar();
         }
 
+        private void OnMainPageLoad(object sender, RoutedEventArgs e)
+        {
+            _watcher.Start();
+        }
+
         private async void InitializeMap()
         {
-            _watcher = new GeoCoordinateWatcher(GeoPositionAccuracy.Default) { MovementThreshold = 10 };
+            _watcher = new GeoCoordinateWatcher(GeoPositionAccuracy.High) { MovementThreshold = 10 };
             _watcher.PositionChanged += this.OnPositionChanged;
+            _watcher.Start();
 
             var geoLocator = new Geolocator { DesiredAccuracyInMeters = 10 };
 
@@ -41,8 +50,6 @@
                 UserLocationMarker = new UserLocationMarker();
                 UserLocationMarker.GeoCoordinate = currentLocation;
                 UserLocationMarker.Visibility = Visibility.Visible;
-                App.ViewModel.CurrentLocation = currentLocation;
-                theMap.SetView(currentLocation, 13);
 
             }
             catch (Exception)
@@ -51,11 +58,6 @@
 
                 App.ViewModel.CurrentLocation = null;
             }
-        }
-
-        private void OnMainPageLoaded(object sender, RoutedEventArgs e)
-        {
-            _watcher.Start();
         }
 
         void OnPositionChanged(object sender, GeoPositionChangedEventArgs<GeoCoordinate> e)
@@ -74,10 +76,35 @@
             query.Waypoints = new List<GeoCoordinate> { App.ViewModel.CurrentLocation, selectedDestination };
             query.RouteOptimization = RouteOptimization.MinimizeTime;
             var result = await query.GetRouteAsync();
-            Debug.WriteLine("Duration to destination: {0}", result.EstimatedDuration);
+            App.ViewModel.DurationToDestination = result.EstimatedDuration;
+
+            this.DoContactSelection();
         }
 
-        
+
+        private void DoContactSelection()
+        {
+            PhoneNumberChooserTask phoneNumberChooser = new PhoneNumberChooserTask();
+            phoneNumberChooser.Completed += OnPhoneNumberChooserCompleted;
+            phoneNumberChooser.Show();
+        }
+
+        private void OnPhoneNumberChooserCompleted(object sender, PhoneNumberResult e)
+        {
+            if (e.TaskResult == TaskResult.OK)
+            {
+                this.DoSms(e.PhoneNumber);
+            }
+        }
+
+        private void DoSms(string theNumber)
+        {
+            SmsComposeTask smsTask = new SmsComposeTask();
+            smsTask.To = theNumber;
+            smsTask.Body = string.Format("Hey, I'm on my way and will be there in {0}", FriendlyTimeHelper.TimeSpanToFriendlyTime(App.ViewModel.DurationToDestination));
+            smsTask.Show();
+        }
+
         // Sample code for building a localized ApplicationBar
         //private void BuildLocalizedApplicationBar()
         //{
