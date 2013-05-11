@@ -1,12 +1,17 @@
-﻿namespace Boco.OnMyWay.App
+﻿// ---------------------------------------------------------------------
+// <copyright file="MainPage.xaml.cs" company="Microsoft">
+//   Copyright Microsoft Corporation, all rights reserved
+// </copyright>
+// ---------------------------------------------------------------------
+namespace Boco.OnMyWay.App
 {
     using System;
     using System.Collections.Generic;
     using System.Device.Location;
-    using System.Linq;
     using System.Windows;
 
     using Boco.OnMyWay.App.Helpers;
+    using Boco.OnMyWay.App.Resources;
 
     using Microsoft.Phone.Controls;
     using Microsoft.Phone.Maps.Services;
@@ -15,11 +20,19 @@
 
     using Windows.Devices.Geolocation;
 
+    /// <summary>
+    /// The main page.
+    /// </summary>
     public partial class MainPage : PhoneApplicationPage
     {
+        /// <summary>
+        /// The GeoCoordinateWatcher to monitor changes in position.
+        /// </summary>
         private GeoCoordinateWatcher _watcher;
 
-        // Constructor
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MainPage"/> class.
+        /// </summary>
         public MainPage()
         {
             InitializeComponent();
@@ -30,11 +43,19 @@
             //BuildLocalizedApplicationBar();
         }
 
+        /// <summary>
+        /// Called when the page has loaded.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void OnMainPageLoad(object sender, RoutedEventArgs e)
         {
             _watcher.Start();
         }
 
+        /// <summary>
+        /// Initializes the map.
+        /// </summary>
         private async void InitializeMap()
         {
             _watcher = new GeoCoordinateWatcher(GeoPositionAccuracy.High) { MovementThreshold = 10 };
@@ -60,12 +81,22 @@
             }
         }
 
+        /// <summary>
+        /// Called when the position of the device changes.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The e.</param>
         void OnPositionChanged(object sender, GeoPositionChangedEventArgs<GeoCoordinate> e)
         {
             theMap.SetView(e.Position.Location, 13);
             App.ViewModel.CurrentLocation = e.Position.Location;
         }
 
+        /// <summary>
+        /// Handles the hold gensture on the map.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="System.Windows.Input.GestureEventArgs"/> instance containing the event data.</param>
         private async void OnMapHold(object sender, System.Windows.Input.GestureEventArgs e)
         {
             var selectedDestination = theMap.ConvertViewportPointToGeoCoordinate(e.GetPosition(theMap));
@@ -78,30 +109,16 @@
             var result = await query.GetRouteAsync();
             App.ViewModel.DurationToDestination = result.EstimatedDuration;
 
-            this.DoContactSelection();
+            this.CreateSms();
         }
 
-
-        private void DoContactSelection()
-        {
-            PhoneNumberChooserTask phoneNumberChooser = new PhoneNumberChooserTask();
-            phoneNumberChooser.Completed += OnPhoneNumberChooserCompleted;
-            phoneNumberChooser.Show();
-        }
-
-        private void OnPhoneNumberChooserCompleted(object sender, PhoneNumberResult e)
-        {
-            if (e.TaskResult == TaskResult.OK)
-            {
-                this.DoSms(e.PhoneNumber);
-            }
-        }
-
-        private void DoSms(string theNumber)
+        /// <summary>
+        /// Creates the SMS message.
+        /// </summary>
+        private void CreateSms()
         {
             SmsComposeTask smsTask = new SmsComposeTask();
-            smsTask.To = theNumber;
-            smsTask.Body = string.Format("Hey, I'm on my way and will be there in {0}", FriendlyTimeHelper.TimeSpanToFriendlyTime(App.ViewModel.DurationToDestination));
+            smsTask.Body = string.Format(AppResources.MessageFormat, FriendlyTimeHelper.TimeSpanToFriendlyTime(App.ViewModel.DurationToDestination));
             smsTask.Show();
         }
 
