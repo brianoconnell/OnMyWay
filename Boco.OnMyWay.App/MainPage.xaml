@@ -17,7 +17,7 @@
     shell:SystemTray.IsVisible="True">
 
     <!--LayoutRoot is the root grid where all page content is placed-->
-    <Grid x:Name="LayoutRoot" Background="#FFA6D30C">
+    <Grid x:Name="LayoutRoot">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -49,16 +49,17 @@
 
             Before shipping remove this XAML and the image itself.-->
         <!--<Image Source="/Assets/AlignmentGrid.png" VerticalAlignment="Top" Height="800" Width="480" Margin="0,-32,0,0" Grid.Row="0" Grid.RowSpan="2" IsHitTestVisible="False" />-->
+
         <!--TitlePanel contains the name of the application and page title-->
-        <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="12,17,0,10">
-            <Image Source="/Assets/logo.png" Width="200" HorizontalAlignment="Left" />
-            <TextBlock Text="where are you going?" Margin="9,-7,0,5" Style="{StaticResource PhoneTextLargeStyle}"/>
-        </StackPanel>
+        <Grid x:Name="TitlePanel" Grid.Row="0" Margin="12,17,0,10">
+            <TextBlock Text="On My Way" Margin="0,10,99,10" Style="{StaticResource PhoneTextTitle1Style}"/>
+            <Image Source="/Assets/Logo_only.png" Margin="382,30,10,28"/>
+        </Grid>
 
         <Grid x:Name="ContentPanel" Height="633" VerticalAlignment="Top" Grid.Row="1">
-            <maps:Map x:Name="theMap" Hold="OnMapHold" RenderTransformOrigin="0.473,0.68" Margin="-13,10,0,0">
+            <maps:Map x:Name="theMap" Hold="OnMapHold" RenderTransformOrigin="0.473,0.68" Margin="-13,0,0,0">
                 <maptk:MapExtensions.Children>
-                    <maptk:UserLocationMarker x:Name="UserLocationMarker" Visibility="Collapsed"></maptk:UserLocationMarker>
+                    <maptk:Pushpin x:Name="UserLocation" Content="You are here"></maptk:Pushpin>
                 </maptk:MapExtensions.Children>
             </maps:Map>
         </Grid>

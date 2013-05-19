@@ -1,8 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2012/deployment" AppPlatformVersion="8.0">
-  <DefaultLanguage xmlns="" code="en-US" />
-  <App xmlns="" ProductID="{f695d865-81b4-4b74-875a-0332e9adf9d8}" Title="Boco.OnMyWay.App" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="Boco.OnMyWay.App author" Description="Sample description" Publisher="Boco.OnMyWay.App" PublisherID="{fd853d89-dba9-4fab-aec7-050e7abe7371}">
-    <IconPath IsRelative="true" IsResource="false">Assets\ApplicationIcon.png</IconPath>
+  <DefaultLanguage xmlns="" code="en" />
+  <Languages xmlns="">
+    <Language code="en" />
+    <Language code="en-AU" />
+    <Language code="en-BZ" />
+    <Language code="en-029" />
+    <Language code="en-CA" />
+    <Language code="en-IN" />
+    <Language code="en-IE" />
+    <Language code="en-JM" />
+    <Language code="en-MY" />
+    <Language code="en-NZ" />
+    <Language code="en-PH" />
+    <Language code="en-SG" />
+    <Language code="en-ZA" />
+    <Language code="en-TT" />
+    <Language code="en-GB" />
+    <Language code="en-US" />
+    <Language code="en-ZW" />
+  </Languages>
+  <App xmlns="" ProductID="{f695d865-81b4-4b74-875a-0332e9adf9d8}" Title="On My Way" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="Brian O'Connell" Description="Send a message to your friends telling them how long it will take" Publisher="Brian O'Connell" PublisherID="{fd853d89-dba9-4fab-aec7-050e7abe7371}">
+    <IconPath IsRelative="true" IsResource="false">Logo_main.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_NETWORKING" />
       <Capability Name="ID_CAP_MEDIALIB_AUDIO" />
@@ -19,10 +38,10 @@
     <Tokens>
       <PrimaryToken TokenID="Boco.OnMyWay.AppToken" TaskName="_default">
         <TemplateFlip>
-          <SmallImageURI IsRelative="true" IsResource="false">Assets\Tiles\FlipCycleTileSmall.png</SmallImageURI>
+          <SmallImageURI IsRelative="true" IsResource="false">logo_tile_main.png</SmallImageURI>
           <Count>0</Count>
-          <BackgroundImageURI IsRelative="true" IsResource="false">Assets\Tiles\FlipCycleTileMedium.png</BackgroundImageURI>
-          <Title>Boco.OnMyWay.App</Title>
+          <BackgroundImageURI IsRelative="true" IsResource="false">logo_tile_med.png</BackgroundImageURI>
+          <Title>On My Way</Title>
           <BackContent>
           </BackContent>
           <BackBackgroundImageURI>

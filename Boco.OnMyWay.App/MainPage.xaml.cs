@@ -35,10 +35,8 @@ namespace Boco.OnMyWay.App
         /// </summary>
         public MainPage()
         {
-            InitializeComponent();
-            InitializeMap();
-            Loaded += OnMainPageLoad;
             DataContext = App.ViewModel;
+            Loaded += OnMainPageLoad;
             // Sample code to localize the ApplicationBar
             //BuildLocalizedApplicationBar();
         }
@@ -50,6 +48,8 @@ namespace Boco.OnMyWay.App
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void OnMainPageLoad(object sender, RoutedEventArgs e)
         {
+            InitializeComponent();
+            InitializeMap();
             _watcher.Start();
         }
 
@@ -67,10 +67,18 @@ namespace Boco.OnMyWay.App
             try
             {
                 Geoposition geoposition = await geoLocator.GetGeopositionAsync(TimeSpan.FromMinutes(5), TimeSpan.FromSeconds(10));
-                var currentLocation = new GeoCoordinate(geoposition.Coordinate.Latitude, geoposition.Coordinate.Longitude);
-                UserLocationMarker = new UserLocationMarker();
-                UserLocationMarker.GeoCoordinate = currentLocation;
-                UserLocationMarker.Visibility = Visibility.Visible;
+                var coordinate = geoposition.Coordinate;
+                var currentLocation = new GeoCoordinate(
+                    coordinate.Latitude, 
+                    coordinate.Longitude,
+                    coordinate.Altitude ?? double.NaN,
+                    coordinate.Accuracy,
+                    coordinate.AltitudeAccuracy ?? double.NaN,
+                    coordinate.Speed ?? double.NaN,
+                    coordinate.Heading ?? double.NaN);
+
+                Pushpin pushpin = (Pushpin)this.FindName("UserLocation");
+                pushpin.GeoCoordinate = currentLocation;
 
             }
             catch (Exception)
@@ -89,6 +97,8 @@ namespace Boco.OnMyWay.App
         void OnPositionChanged(object sender, GeoPositionChangedEventArgs<GeoCoordinate> e)
         {
             theMap.SetView(e.Position.Location, 13);
+            Pushpin pushpin = (Pushpin)this.FindName("UserLocation");
+            pushpin.GeoCoordinate = e.Position.Location;
             App.ViewModel.CurrentLocation = e.Position.Location;
         }
 
@@ -102,8 +112,9 @@ namespace Boco.OnMyWay.App
             var selectedDestination = theMap.ConvertViewportPointToGeoCoordinate(e.GetPosition(theMap));
 
             var query = new RouteQuery();
-            query.InitialHeadingInDegrees = App.ViewModel.CurrentLocation.Course;
-            query.TravelMode = TravelMode.Driving;
+            var course = App.ViewModel.CurrentLocation.Course;
+            query.InitialHeadingInDegrees = course;
+            query.TravelMode = TravelMode.Walking;
             query.Waypoints = new List<GeoCoordinate> { App.ViewModel.CurrentLocation, selectedDestination };
             query.RouteOptimization = RouteOptimization.MinimizeTime;
             var result = await query.GetRouteAsync();
